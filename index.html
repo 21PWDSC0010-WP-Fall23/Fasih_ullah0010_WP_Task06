@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="bootstrap-5.0.2-dist/css/bootstrap.css">
+    <link rel="stylesheet" href="bootstrap-5.0.2-dist/js/bootstrap.js">
+    <title>Online Library Management System</title>
+</head>
+<body>
+    <div class="container text-center pt-5 ">
+        <h2 class="font-h2">ONLINE LIBRARY MANAGEMENT SYSTEM</h2>
+    </div>
+    <div class="container">
+        <div class="row ">
+        <div class="book-list bg-light  col-md-4">
+            <h2>Book List</h2>
+            <ul id="book-list">
+                <!-- Book list will be dynamically populated here -->
+            </ul>
+        </div>
+        <div class="add-book bg-light  col-md-4">
+            <h2>Add New Book</h2>
+            <form id="add-book-form">
+                <input type="text" id="title" placeholder="Title" required>
+                <input type="text" id="author" placeholder="Author" required>
+                <input type="text" id="isbn" placeholder="ISBN" required><br>
+                <button type="submit">Add Book</button>
+            </form>
+            <p id="error-message" class="hidden">Book with the same ISBN already exists!</p>
+        </div>
+        <div class="search-books bg-light  col-md-4">
+            <h2>Search for Books</h2>
+            <input type="text" id="search-input" placeholder="Search by author or ISBN">
+            <button type="submit">Search</button>
+            <ul id="search-results">
+                <!-- Search results will be dynamically populated here -->
+            </ul>
+        </div>
+    </div>
+    </div>
+    <script src="script.js">
+         document.addEventListener("DOMContentLoaded", function () {
+    const bookList = document.getElementById("book-list");
+    const addBookForm = document.getElementById("add-book-form");
+    const searchInput = document.getElementById("search-input");
+    const searchResults = document.getElementById("search-results");
+    const errorMessage = document.getElementById("error-message");
+
+    const books = [];
+
+    addBookForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const title = document.getElementById("title").value;
+        const author = document.getElementById("author").value;
+        const isbn = document.getElementById("isbn").value;
+
+        if (isDuplicate(isbn)) {
+            errorMessage.classList.remove("hidden");
+            return;
+        }
+
+        books.push({ title, author, isbn });
+
+        errorMessage.classList.add("hidden");
+
+        renderBookList();
+        clearAddBookForm();
+    });
+
+    searchInput.addEventListener("input", function () {
+        const query = searchInput.value.toLowerCase();
+
+        const results = books.filter((book) =>
+            book.title.toLowerCase().includes(query) ||
+            book.author.toLowerCase().includes(query) ||
+            book.isbn.toLowerCase().includes(query)
+        );
+
+        renderSearchResults(results);
+    });
+
+    function isDuplicate(isbn) {
+        return books.some((book) => book.isbn === isbn);
+    }
+
+    function renderBookList() {
+        bookList.innerHTML = books.map((book) => `<li>${book.title} - ${book.author}</li>`).join("");
+    }
+
+    function clearAddBookForm() {
+        document.getElementById("title").value = "";
+        document.getElementById("author").value = "";
+        document.getElementById("isbn").value = "";
+    }
+
+    function renderSearchResults(results) {
+        searchResults.innerHTML = results.map((book) => `<li>${book.title} - ${book.author}</li>`).join("");
+    }
+});
+    </script>
+</body>
+</html>
